@@ -26,6 +26,8 @@ export class UsersController {
 
   @Put(':id')
   async update(@Param('id') id: string, @Body() user: User) {
+    const userExists = await this.usersService.findOne(id);
+    if (!userExists) throw new NotFoundException('User does not exist!');
     return this.usersService.updateUser(user, id);
   }
 
