@@ -31,6 +31,8 @@ export class UsersController {
 
   @Delete(':id')
   async remove(@Param('id') id: string) {
+    const user = await this.usersService.findOne(id);
+    if (!user) throw new NotFoundException('User does not exist');
     return this.usersService.remove(id);
   }
 }
