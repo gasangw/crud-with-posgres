@@ -21,11 +21,11 @@ export class UsersService {
     return await this.userRepository.find();
   }
 
-  async findOne(id: string): Promise<User[]> {
+  async findOne(id: string): Promise<UserDetailDto> {
     const user = await this.userRepository.find({
       where: { id: +id },
     });
-    return user;
+    return this.getUserDetailDto(user[0]);
   }
 
   async findOneByEmail(email: string): Promise<User> {
