@@ -2,6 +2,7 @@ import { Controller, NotFoundException } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { Get, Post, Put, Delete, Param, Body } from '@nestjs/common';
 import { User } from './user.entity';
+import { NewUserDto } from './dtos/newUser.dto';
 
 @Controller('users')
 export class UsersController {
@@ -20,7 +21,7 @@ export class UsersController {
   }
 
   @Post()
-  async create(@Body() user: User) {
+  async create(@Body() user: NewUserDto) {
     return this.usersService.create(user);
   }
 
