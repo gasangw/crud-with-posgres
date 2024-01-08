@@ -1,5 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
+import { ExistingUserDto } from 'src/users/dtos/existingUser.dto';
 import { NewUserDto } from 'src/users/dtos/newUser.dto';
 import { User } from 'src/users/user.entity';
 import { UsersService } from 'src/users/users.service';
@@ -7,10 +8,6 @@ import { UsersService } from 'src/users/users.service';
 @Injectable()
 export class AuthService {
   constructor(private UserService: UsersService) {}
-
-  // async hashedPassword(password: string): Promise<string> {
-  //   return await bcrypt.hash(password, 12);
-  // }
 
   async register(user: NewUserDto): Promise<User[] | any> {
     // check if the email is in use
@@ -32,5 +29,21 @@ export class AuthService {
     return newUser;
   }
 
-  signin() {}
+  async signin(user: ExistingUserDto) {
+    // check if the email exists
+    const existingUser = await this.UserService.findOneByEmail(user.email);
+    // throw an error if the email does not exist
+    if (!existingUser)
+      throw new BadRequestException('Invalid email address provided');
+    // compare the password provided with the password in the database
+    const existingUserPassword = existingUser.password.split('.')[0];
+    const existingUserSalt = existingUser.password.split('.')[1];
+
+    const hashedPassword = await bcrypt.hash(user.password, existingUserSalt);
+    if (hashedPassword !== existingUserPassword)
+      throw new BadRequestException('Invalid password provided');
+
+    // return the user if the password matches
+    return existingUser;
+  }
 }
