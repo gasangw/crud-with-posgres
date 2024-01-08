@@ -20,6 +20,11 @@ export class UsersController {
     return user;
   }
 
+  @Get(':email')
+  async findOneByEmail(@Param('email') email: string) {
+    return await this.usersService.findOneByEmail(email);
+  }
+
   @Post()
   async create(@Body() user: NewUserDto) {
     return this.usersService.create(user);
