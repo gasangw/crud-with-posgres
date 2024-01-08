@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { NewUserDto } from 'src/users/dtos/newUser.dto';
-import { UserDetailDto } from 'src/users/dtos/userDetail.dto';
+import { User } from 'src/users/user.entity';
 import { UsersService } from 'src/users/users.service';
 
 @Injectable()
@@ -12,7 +12,7 @@ export class AuthService {
     return await bcrypt.hash(password, 12);
   }
 
-  async register(user: NewUserDto): Promise<UserDetailDto | any> {
+  async register(user: NewUserDto): Promise<User[] | any> {
     // check if the email is in use
     const existingUser = await this.UserService.findOneByEmail(user.email);
     if (existingUser) throw new BadRequestException('Email is in use');
@@ -23,7 +23,7 @@ export class AuthService {
       password: hashedPassword,
     });
     // create the user and save them
-    return this.UserService.getUserDetailDto(newUser);
+    return newUser;
     // return the user
   }
 
